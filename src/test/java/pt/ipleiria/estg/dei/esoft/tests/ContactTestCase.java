@@ -73,4 +73,5 @@ public class ContactTestCase {
         assertEquals(calendar.getTime(), contact.getBirthday());
     }
 
+    // TODO implement other tests that you may consider important
 }

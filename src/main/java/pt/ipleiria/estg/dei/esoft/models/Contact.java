@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Objects;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,5 +30,10 @@ public class Contact {
     public Contact(String firstName, String lastName, String phone, String email) {
         this(firstName, lastName, phone);
         this.email = email;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, lastName, birthday, phone, email);
     }
 }

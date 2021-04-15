@@ -17,25 +17,30 @@ public class ContactsManager {
     }
 
     public List<String> getLabels() {
-        // TODO return all the labels
-
         return new ArrayList<>(labels.keySet());
     }
 
     public List<Contact> getContacts(String... labels) {
-        // TODO get contacts in labels or all ...
+        // TODO
+        // get contacts in labels or all ...
+        // labels must be exact match. ignore case.
+        // multiple labels must be an INNER JOIN
 
         return contacts;
     }
 
     public List<Contact> search(String term, String... labels) {
-        // TODO search for contacts with term, and also in specific labels
+        // TODO
+        // search for contacts with term, and also in specific labels
+        // labels don't need to be exact match. ignore case.
+        // "term" must lookup into contact fields, comparing the values. Don't need to be exact match. ignore case.
+        // because it's a search, labels must be a FULL OUTER JOIN
 
         return contacts;
     }
 
     public void addContact(Contact contact, String... labels) {
-        // DO NOT ALLOW TO ADD DUPLICATED CONTACTS (same phone and/or email)
+        // do not allow duplicated contacts (same phone and/or email)
         if (!contacts.contains(contact)) contacts.add(contact);
 
         if (labels.length == 0) return;
@@ -53,10 +58,15 @@ public class ContactsManager {
     }
 
     public void removeContact(Contact contact) {
-        // TODO remove the contact
+        contacts.remove(contact);
+        labels.values().forEach(contacts -> contacts.remove(contact));
     }
 
     public int size() {
         return contacts.size();
+    }
+
+    public boolean isEmpty() {
+        return contacts.isEmpty();
     }
 }

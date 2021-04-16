@@ -2,10 +2,8 @@ package pt.ipleiria.estg.dei.esoft.managers;
 
 import pt.ipleiria.estg.dei.esoft.models.Contact;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ContactsManager {
     private List<Contact> contacts;
@@ -20,23 +18,72 @@ public class ContactsManager {
         return new ArrayList<>(labels.keySet());
     }
 
-    public List<Contact> getContacts(String... labels) {
-        // TODO
-        // get contacts in labels or all ...
-        // labels must be exact match. ignore case.
-        // multiple labels must be an INNER JOIN
+    public void addLabel(String label) {
+        this.labels.put(label.toLowerCase(), new LinkedList<>());
+    }
 
-        return contacts;
+    public void removeLabel(String label) {
+        this.labels.remove(label.toLowerCase());
+    }
+
+    public List<Contact> getContacts(String... labels) {
+        if (labels.length == 0) return contacts;
+
+        var contactsFound = new LinkedList<Contact>();
+
+        for (var contact : contacts) {
+            var isContactPresentInAllLabels = true;
+
+            for (var label : labels) {
+                var labelLowerCase = label.toLowerCase();
+                if (! this.labels.containsKey(labelLowerCase)) {
+                    isContactPresentInAllLabels = false;
+                    break;
+                }
+
+                var contactsLabel = this.labels.get(labelLowerCase);
+
+                if (! contactsLabel.contains(contact)) {
+                    isContactPresentInAllLabels = false;
+                    break;
+                }
+            }
+
+            if (isContactPresentInAllLabels) {
+                contactsFound.add(contact);
+            }
+        }
+
+        return contactsFound;
     }
 
     public List<Contact> search(String term, String... labels) {
-        // TODO
-        // search for contacts with term, and also in specific labels
-        // labels don't need to be exact match. ignore case.
-        // "term" must lookup into contact fields, comparing the values. Don't need to be exact match. ignore case.
-        // because it's a search, labels must be a FULL OUTER JOIN
+        if (labels.length == 0 && term.trim().isBlank()) return contacts;
 
-        return contacts;
+        List<String> searchingLabels;
+
+        if (labels.length == 0) {
+            searchingLabels = this.getLabels();
+        } else {
+            searchingLabels = Arrays.stream(labels).collect(Collectors.toList());
+        }
+
+        var contactsFound = new LinkedList<Contact>();
+
+        for (var label : searchingLabels) {
+            var labelLowerCase = label.toLowerCase();
+
+            if (! this.labels.containsKey(labelLowerCase)) continue;
+
+            var contacts = this.labels.get(labelLowerCase);
+            for (var contact : contacts) {
+                if (contact.matches(term) && !contactsFound.contains(contact)) {
+                    contactsFound.add(contact);
+                }
+            }
+        }
+
+        return contactsFound;
     }
 
     public void addContact(Contact contact, String... labels) {
@@ -46,11 +93,13 @@ public class ContactsManager {
         if (labels.length == 0) return;
 
         for (var label : labels) {
-            if (!this.labels.containsKey(label)) {
-                this.labels.put(label, new LinkedList<>());
+            var labelLowerCase = label.toLowerCase();
+
+            if (!this.labels.containsKey(labelLowerCase)) {
+                this.addLabel(labelLowerCase);
             }
 
-            var contactsLabel = this.labels.get(label);
+            var contactsLabel = this.labels.get(labelLowerCase);
             if (!contactsLabel.contains(contact)) {
                 contactsLabel.add(contact);
             }

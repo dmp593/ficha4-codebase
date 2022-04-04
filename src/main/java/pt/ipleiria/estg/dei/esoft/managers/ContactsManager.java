@@ -3,6 +3,7 @@ package pt.ipleiria.estg.dei.esoft.managers;
 import pt.ipleiria.estg.dei.esoft.models.Contact;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class ContactsManager {
@@ -15,100 +16,83 @@ public class ContactsManager {
     }
 
     public List<String> getLabels() {
-        return new ArrayList<>(labels.keySet());
-    }
-
-    public void addLabel(String label) {
-        this.labels.put(label.toLowerCase(), new LinkedList<>());
-    }
-
-    public void removeLabel(String label) {
-        this.labels.remove(label.toLowerCase());
+        // return this.labels.keySet().stream().collect(Collectors.toList());
+        return this.labels.keySet().stream().toList();
     }
 
     public List<Contact> getContacts(String... labels) {
-        if (labels.length == 0) return contacts;
+        if (labels.length == 0) {
+            return this.contacts;
+        }
 
-        var contactsFound = new LinkedList<Contact>();
+        var validLabels = Arrays.stream(labels).toList()
+                .stream().filter(this.labels::containsKey).toList();
 
-        for (var contact : contacts) {
-            var isContactPresentInAllLabels = true;
+        List<Contact> contacts = new LinkedList<>();
 
-            for (var label : labels) {
-                var labelLowerCase = label.toLowerCase();
-                if (! this.labels.containsKey(labelLowerCase)) {
-                    isContactPresentInAllLabels = false;
-                    break;
-                }
+        if (validLabels.size() != labels.length) {
+            return contacts;
+        }
 
-                var contactsLabel = this.labels.get(labelLowerCase);
+        for (var contact : this.contacts) {
+            var isPresentInAllLabels = true;
 
-                if (! contactsLabel.contains(contact)) {
-                    isContactPresentInAllLabels = false;
+            for (var label : validLabels) {
+                if (! this.labels.get(label).contains(contact)) {
+                    isPresentInAllLabels = false;
                     break;
                 }
             }
 
-            if (isContactPresentInAllLabels) {
-                contactsFound.add(contact);
+            if (isPresentInAllLabels) {
+                contacts.add(contact);
             }
         }
 
-        return contactsFound;
+        return contacts;
     }
 
     public List<Contact> search(String term, String... labels) {
-        if (labels.length == 0 && term.trim().isBlank()) return contacts;
-
-        List<String> searchingLabels;
+        if (term == null) return getContacts(labels);
 
         if (labels.length == 0) {
-            searchingLabels = this.getLabels();
-        } else {
-            searchingLabels = Arrays.stream(labels).collect(Collectors.toList());
+            labels = (String[]) this.labels.keySet().toArray();
         }
 
-        var contactsFound = new LinkedList<Contact>();
-
-        for (var label : searchingLabels) {
-            var labelLowerCase = label.toLowerCase();
-
-            if (! this.labels.containsKey(labelLowerCase)) continue;
-
-            var contacts = this.labels.get(labelLowerCase);
-            for (var contact : contacts) {
-                if (contact.matches(term) && !contactsFound.contains(contact)) {
-                    contactsFound.add(contact);
+        for (var label : labels) {
+            for (var contact : this.labels.get(label)) {
+                if (contact.match(term)) {
+                    contacts.add(contact);
                 }
             }
         }
 
-        return contactsFound;
+        return contacts;
     }
 
     public void addContact(Contact contact, String... labels) {
-        // do not allow duplicated contacts (same phone and/or email)
-        if (!contacts.contains(contact)) contacts.add(contact);
+        Predicate<Contact> isDuplicated = c ->
+                Objects.equals(c.getPhone(), contact.getPhone()) && Objects.equals(c.getEmail(), contact.getEmail());
 
-        if (labels.length == 0) return;
+        if (this.contacts.stream().noneMatch(isDuplicated)) {
+            this.contacts.add(contact);
+        }
 
         for (var label : labels) {
-            var labelLowerCase = label.toLowerCase();
-
-            if (!this.labels.containsKey(labelLowerCase)) {
-                this.addLabel(labelLowerCase);
+            if (! this.labels.containsKey(label)) {
+                this.labels.put(label, new LinkedList<>());
             }
 
-            var contactsLabel = this.labels.get(labelLowerCase);
-            if (!contactsLabel.contains(contact)) {
-                contactsLabel.add(contact);
+            var contacts = this.labels.get(label);
+            if (contacts.stream().noneMatch(isDuplicated)) {
+                contacts.add(contact);
             }
         }
     }
 
     public void removeContact(Contact contact) {
-        contacts.remove(contact);
-        labels.values().forEach(contacts -> contacts.remove(contact));
+        this.contacts.remove(contact);
+        this.labels.values().forEach(contacts -> contacts.remove(contact));
     }
 
     public int size() {

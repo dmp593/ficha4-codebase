@@ -26,7 +26,7 @@ public class ContactsManager {
         }
 
         var validLabels = Arrays.stream(labels).toList()
-                .stream().filter(this.labels::containsKey).toList();
+            .stream().filter(this.labels::containsKey).toList();
 
         List<Contact> contacts = new LinkedList<>();
 
@@ -57,10 +57,6 @@ public class ContactsManager {
         
         if (term == null) {
             return contacts;
-        }
-
-        if (labels.length == 0) {
-            labels = (String[]) this.labels.keySet().toArray();
         }
 
         var matches = new LinkedList<Contact>();

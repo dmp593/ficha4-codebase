@@ -59,6 +59,8 @@ public class ContactsManager {
             labels = (String[]) this.labels.keySet().toArray();
         }
 
+        List<Contact> contacts = new LinkedList<>();
+
         for (var label : labels) {
             for (var contact : this.labels.get(label)) {
                 if (contact.match(term)) {

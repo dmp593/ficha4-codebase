@@ -99,6 +99,38 @@ public class ContactsManagerTestCase {
         assertEquals(0, cm.getContacts("ipl", "xgeeks").size());
     }
 
+    @Test
+    public void testSearchContacts() {
+        var foo = new Contact("foobar", "91Y YYY YYY");
 
+        cm.addContact(foo, "setwin", "hlink");
 
+        var search = cm.search("oba", "hlink");
+
+        assertEquals(1, search.size());
+        assertEquals(foo, search.get(0));
+    }
+
+    @Test
+    public void testSearchContactsThatAreInAllLabels() {
+        var foo = new Contact("foobar", "91Y YYY YYY");
+
+        cm.addContact(foo, "setwin", "hlink");
+
+        var search = cm.search("oba", "hlink", "setwin");
+
+        assertEquals(1, search.size());
+        assertEquals(foo, search.get(0));
+    }
+
+    @Test
+    public void testSearchContactsThatAreNotInAllLabels() {
+        var foo = new Contact("foobar", "91Y YYY YYY");
+
+        cm.addContact(foo, "setwin", "hlink");
+
+        var search = cm.search("oba", "hlink", "setwin", "google");
+
+        assertEquals(0, search.size());
+    }
 }

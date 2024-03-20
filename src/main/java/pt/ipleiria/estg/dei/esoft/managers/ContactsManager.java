@@ -4,7 +4,6 @@ import pt.ipleiria.estg.dei.esoft.models.Contact;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class ContactsManager {
     private List<Contact> contacts;

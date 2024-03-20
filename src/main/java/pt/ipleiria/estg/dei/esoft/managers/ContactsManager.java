@@ -53,23 +53,25 @@ public class ContactsManager {
     }
 
     public List<Contact> search(String term, String... labels) {
-        if (term == null) return getContacts(labels);
+        var contacts = getContacts(labels);
+        
+        if (term == null) {
+            return contacts;
+        }
 
         if (labels.length == 0) {
             labels = (String[]) this.labels.keySet().toArray();
         }
 
-        List<Contact> contacts = new LinkedList<>();
+        var matches = new LinkedList<Contact>();
 
-        for (var label : labels) {
-            for (var contact : this.labels.get(label)) {
-                if (contact.match(term)) {
-                    contacts.add(contact);
-                }
+        for (var contact : contacts) {
+            if (contact.match(term)) {
+                matches.add(contact);
             }
         }
 
-        return contacts;
+        return matches;
     }
 
     public void addContact(Contact contact, String... labels) {

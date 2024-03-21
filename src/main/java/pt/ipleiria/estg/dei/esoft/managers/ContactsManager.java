@@ -56,7 +56,7 @@ public class ContactsManager {
 
     public void addContact(Contact contact, String... labels) {
         Predicate<Contact> isDuplicated = c ->
-                Objects.equals(c.getPhone(), contact.getPhone()) && Objects.equals(c.getEmail(), contact.getEmail());
+                Objects.equals(c.getPhone(), contact.getPhone()) || Objects.equals(c.getEmail(), contact.getEmail());
 
         if (this.contacts.stream().noneMatch(isDuplicated)) {
             this.contacts.add(contact);

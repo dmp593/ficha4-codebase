@@ -15,7 +15,6 @@ public class ContactsManager {
     }
 
     public List<String> getLabels() {
-        // return this.labels.keySet().stream().collect(Collectors.toList());
         return this.labels.keySet().stream().toList();
     }
 

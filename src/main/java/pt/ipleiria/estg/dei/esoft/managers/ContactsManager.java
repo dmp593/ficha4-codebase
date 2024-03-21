@@ -23,10 +23,8 @@ public class ContactsManager {
             return this.contacts;
         }
 
-        var validLabels = Arrays.stream(labels).toList()
-            .stream().filter(this.labels::containsKey).toList();
-
-        List<Contact> contacts = new LinkedList<>();
+        var contacts = new LinkedList<Contact>();
+        var validLabels = Arrays.stream(labels).filter(this.labels::containsKey).toList();
 
         if (validLabels.size() != labels.length) {
             return contacts;
@@ -55,10 +53,7 @@ public class ContactsManager {
     }
 
     public void addContact(Contact contact, String... labels) {
-        Predicate<Contact> isDuplicated = c ->
-                Objects.equals(c.getPhone(), contact.getPhone()) || Objects.equals(c.getEmail(), contact.getEmail());
-
-        if (this.contacts.stream().noneMatch(isDuplicated)) {
+        if (this.contacts.stream().noneMatch(contact::isDuplicated)) {
             this.contacts.add(contact);
         }
 
@@ -67,9 +62,9 @@ public class ContactsManager {
                 this.labels.put(label, new LinkedList<>());
             }
 
-            var contacts = this.labels.get(label);
-            if (contacts.stream().noneMatch(isDuplicated)) {
-                contacts.add(contact);
+            var labelledContacts = this.labels.get(label);
+            if (labelledContacts.stream().noneMatch(contact::isDuplicated)) {
+                labelledContacts.add(contact);
             }
         }
     }

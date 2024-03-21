@@ -32,25 +32,42 @@ public class Contact {
         this.email = email;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Contact)) return false;
+    public boolean isDuplicated(Contact another) {
+        if (Objects.equals(this, another)) {
+            // if it's the same instance, doesn't make sense the comparison.
+            return false;
+        }
+        
+        if (phone != null && phone.equals(another.phone)) {
+            return true;
+        }
 
-        var another = (Contact) o;
+        if (email != null && email.equals(another.email)) {
+            return true;
+        }
 
-        if (! Objects.equals(this.firstName, another.firstName)) return false;
-        if (! Objects.equals(this.lastName, another.lastName)) return false;
-        if (! Objects.equals(this.birthday, another.birthday)) return false;
-        if (! Objects.equals(this.phone, another.phone)) return false;
-        if (! Objects.equals(this.email, another.email)) return false;
-
-        return true;
+        return false;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(firstName, lastName, phone, email, birthday);
-    }
+    // @Override
+    // public boolean equals(Object o) {
+    //     if (!(o instanceof Contact)) return false;
+
+    //     var another = (Contact) o;
+
+    //     if (! Objects.equals(this.firstName, another.firstName)) return false;
+    //     if (! Objects.equals(this.lastName, another.lastName)) return false;
+    //     if (! Objects.equals(this.birthday, another.birthday)) return false;
+    //     if (! Objects.equals(this.phone, another.phone)) return false;
+    //     if (! Objects.equals(this.email, another.email)) return false;
+
+    //     return true;
+    // }
+
+    // @Override
+    // public int hashCode() {
+    //     return Objects.hash(firstName, lastName, phone, email, birthday);
+    // }
 
     public boolean match(String term) {
         if (term.isBlank()) return false;

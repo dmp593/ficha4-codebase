@@ -52,21 +52,7 @@ public class ContactsManager {
     }
 
     public List<Contact> search(String term, String... labels) {
-        var contacts = getContacts(labels);
-        
-        if (term == null) {
-            return contacts;
-        }
-
-        var matches = new LinkedList<Contact>();
-
-        for (var contact : contacts) {
-            if (contact.match(term)) {
-                matches.add(contact);
-            }
-        }
-
-        return matches;
+        return getContacts(labels).stream().filter(c -> c.match(term)).toList();
     }
 
     public void addContact(Contact contact, String... labels) {

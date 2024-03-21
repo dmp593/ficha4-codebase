@@ -3,7 +3,6 @@ package pt.ipleiria.estg.dei.esoft.managers;
 import pt.ipleiria.estg.dei.esoft.models.Contact;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 public class ContactsManager {
     private List<Contact> contacts;
